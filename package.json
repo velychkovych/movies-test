@@ -1,41 +1,48 @@
 {
-  "name": "movies-test",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/velychkovych/movies-test.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/velychkovych/movies-test/issues"
-  },
-  "homepage": "https://github.com/velychkovych/movies-test#readme",
-  "dependencies": {
-    "bcrypt": "^5.1.0",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "express-jwt": "^7.7.7",
-    "jsonwebtoken": "^8.5.1",
-    "sequelize": "^6.25.6"
-  },
-  "devDependencies": {
-    "eslint": "^8.28.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-node": "^4.1.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "nodemon": "^2.0.20",
-    "prettier": "^2.7.1",
-    "sequelize-cli": "^6.5.2"
-  }
+	"name": "movies-test",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"engines": {
+		"node": ">=15.0.0"
+	},
+	"scripts": {
+		"dev": "nodemon index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/velychkovych/movies-test.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/velychkovych/movies-test/issues"
+	},
+	"homepage": "https://github.com/velychkovych/movies-test#readme",
+	"dependencies": {
+		"bcrypt": "^5.1.0",
+		"cors": "^2.8.5",
+		"dotenv": "^16.0.3",
+		"express": "^4.18.2",
+		"express-fileupload": "^1.4.0",
+		"express-jwt": "^7.7.7",
+		"fs": "^0.0.1-security",
+		"jsonwebtoken": "^8.5.1",
+		"path": "^0.12.7",
+		"sequelize": "^6.25.6",
+		"sqlite3": "^5.1.2"
+	},
+	"devDependencies": {
+		"eslint": "^8.28.0",
+		"eslint-config-airbnb": "^19.0.4",
+		"eslint-config-airbnb-base": "^15.0.0",
+		"eslint-config-node": "^4.1.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-import": "^2.26.0",
+		"eslint-plugin-node": "^11.1.0",
+		"eslint-plugin-prettier": "^4.2.1",
+		"nodemon": "^2.0.20",
+		"prettier": "^2.7.1",
+		"sequelize-cli": "^6.5.2"
+	}
 }

@@ -11,6 +11,11 @@
         "no-console": "off",
         "no-underscore-dangle": "off",
         "no-dynamic-require": "off",
-        "no-unused-vars": "warn"
+        "no-unused-vars": "warn",
+        "strict" : "off",
+        "import/no-dynamic-require": "off",
+        "no-param-reassign": "off",
+        "max-classes-per-file": "off",
+        "no-unsafe-optional-chaining": "off"
     }
 }
