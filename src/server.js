@@ -15,7 +15,7 @@ app.use(express.json());
 
 app.use('/api/v1/sessions', authController);
 app.use('/api/v1/users', userController);
-app.use('/api/v1/movies', movieController);
+app.use('/api/v1/movies', jwtMiddleware, movieController);
 
 app.use(errorHandler);
 
