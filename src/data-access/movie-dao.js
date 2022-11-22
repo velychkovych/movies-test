@@ -52,7 +52,7 @@ module.exports = (sequelize, Movie, Actor) => {
 
 	async function findAll({ sort, order, limit, offset }) {
 		const findMovies = await Movie.findAll({
-			order: [[sequelize.fn('lower', sequelize.col(sort)), order]],
+			order: [[sort, order]],
 			limit,
 			offset,
 			include: Actor,

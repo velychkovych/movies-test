@@ -14,7 +14,7 @@ module.exports = (error, req, res, next) => {
 		});
 	} else if (error instanceof UnauthorizedError) {
 		res.status(responseCodes.UNAUTHORIZED).send({
-			msg: 'auth token required',
+			msg: 'wrong auth token',
 		});
 	} else if (error instanceof WrongCredentials) {
 		res.status(responseCodes.FORBIDDEN).send({
