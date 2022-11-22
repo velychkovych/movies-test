@@ -1,4 +1,6 @@
-module.exports = ({ movieDao, actorDao, listMoviesValidator, fileReader }) => {
+const { NotFoundError } = require('../errors');
+
+module.exports = ({ movieDao, actorDao, movieValidator, fileReader }) => {
 	const parseMovies = (records) => {
 		const parsedMovies = [];
 		for (let i = 0; i < records.length; i += 5) {
@@ -35,7 +37,7 @@ module.exports = ({ movieDao, actorDao, listMoviesValidator, fileReader }) => {
 			if (search) return movieDao.findManyByActorOrTitle(search, options);
 			return movieDao.findAll(options);
 		};
-		const validatedOptions = listMoviesValidator.validate({
+		const validatedOptions = movieValidator.validateGetAll({
 			sort,
 			order,
 			limit,
@@ -50,13 +52,16 @@ module.exports = ({ movieDao, actorDao, listMoviesValidator, fileReader }) => {
 
 	async function getById(id) {
 		const movie = await movieDao.findById(id);
+		if (!movie) throw new NotFoundError('movie not found');
 		return {
 			data: movie,
 			status: 1,
 		};
 	}
 
-	async function create({ title, year, format, actorNames }) {
+	async function create(data) {
+		const { title, year, format, actorNames } =
+			movieValidator.validateCreate(data);
 		const actors = await actorDao.findManyByName(actorNames);
 		const notCreatedActors = actorNames.filter(
 			(name) => !actors.map((actor) => actor.name).includes(name)
@@ -75,7 +80,8 @@ module.exports = ({ movieDao, actorDao, listMoviesValidator, fileReader }) => {
 		};
 	}
 
-	async function importMany(file) {
+	async function importMany(files) {
+		const file = await movieValidator.validateImportFile(files);
 		const data = await fileReader.readFile(file.tempFilePath);
 		const parsedMovies = parseMovies(data.toString().split('\n'));
 		const actorNames = [
@@ -106,21 +112,27 @@ module.exports = ({ movieDao, actorDao, listMoviesValidator, fileReader }) => {
 		};
 	}
 
-	async function update({ id, title, year, format, actorNames }) {
+	async function update(data) {
+		const { title, year, format, actorNames } =
+			movieValidator.validateUpdate(data);
 		const actors = await actorDao.findManyByName(actorNames);
 		const notCreatedActors = actorNames.filter(
 			(name) => !actors.map((actor) => actor.name).includes(name)
 		);
 		const createdActors = await actorDao.createMany(notCreatedActors);
-		console.log(actors, createdActors);
 		const movie = await movieDao.update({
-			id,
+			id: data.id,
 			title,
 			year,
 			format,
-			actorIds: [...actors, ...createdActors].map((actor) => actor.id),
+			actorIds:
+				data.actorNames &&
+				[...actors, ...createdActors].map((actor) => actor.id),
 		});
-		movie.actors = [...actors, ...createdActors];
+		if (!movie) throw new NotFoundError('movie not found');
+		if (data.actorNames) {
+			movie.actors = [...actors, ...createdActors];
+		}
 		return {
 			data: movie,
 			status: 1,
@@ -128,7 +140,8 @@ module.exports = ({ movieDao, actorDao, listMoviesValidator, fileReader }) => {
 	}
 
 	async function deleteById(id) {
-		await movieDao.deleteById(id);
+		const deleted = await movieDao.deleteById(id);
+		if (!deleted) throw new NotFoundError('movie not found');
 		return { status: 1 };
 	}
 

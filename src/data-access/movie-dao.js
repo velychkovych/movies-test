@@ -1,7 +1,4 @@
-const { Op } = require('sequelize');
-const { NotFoundError } = require('../errors');
-
-module.exports = (Movie, Actor) => {
+module.exports = (sequelize, Movie, Actor) => {
 	const formatMovie = (movie) => {
 		if (movie.Actors) {
 			movie.actors = movie.Actors.map((actor) => {
@@ -22,7 +19,7 @@ module.exports = (Movie, Actor) => {
 				model: Actor,
 				where: {
 					name: {
-						[Op.substring]: actor,
+						[sequelize.Op.substring]: actor,
 					},
 				},
 			},
@@ -32,7 +29,13 @@ module.exports = (Movie, Actor) => {
 
 	async function findManyByTitle(title, { sort, order, limit, offset }) {
 		const findMovies = await Movie.findAll({
-			where: { title },
+			where: {
+				title: sequelize.where(
+					sequelize.fn('LOWER', sequelize.col('title')),
+					'LIKE',
+					`%${title}%`
+				),
+			},
 			order: [[sort, order]],
 			limit,
 			offset,
@@ -49,7 +52,7 @@ module.exports = (Movie, Actor) => {
 
 	async function findAll({ sort, order, limit, offset }) {
 		const findMovies = await Movie.findAll({
-			order: [[sort, order]],
+			order: [[sequelize.fn('lower', sequelize.col(sort)), order]],
 			limit,
 			offset,
 			include: Actor,
@@ -62,8 +65,7 @@ module.exports = (Movie, Actor) => {
 			where: { id },
 			include: Actor,
 		});
-		if (!findMovie) throw new NotFoundError();
-		console.log(findMovie);
+		if (!findMovie) return null;
 		return formatMovie(findMovie.dataValues);
 	}
 
@@ -84,16 +86,27 @@ module.exports = (Movie, Actor) => {
 	}
 
 	async function update({ id, title, year, format, actorIds }) {
-		const findMovie = await Movie.findOne({ where: { id } });
-		if (!findMovie) throw new NotFoundError();
-		findMovie.set({ title, year, format });
-		findMovie.setActors(actorIds);
+		const findMovie = await Movie.findOne({
+			where: { id },
+			include: Actor,
+		});
+		if (!findMovie) return null;
+		const vals = {
+			title,
+			year,
+			format,
+		};
+		findMovie.set(JSON.parse(JSON.stringify(vals)));
+		findMovie.save();
+		if (actorIds) {
+			findMovie.setActors(actorIds);
+		}
 		return formatMovie(findMovie.dataValues);
 	}
 
 	async function deleteById(id) {
 		const deleteMovie = await Movie.destroy({ where: { id } });
-		if (!deleteMovie) throw new NotFoundError();
+		if (!deleteMovie) return null;
 		return deleteMovie;
 	}
 

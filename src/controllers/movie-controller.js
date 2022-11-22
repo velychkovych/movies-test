@@ -46,7 +46,7 @@ movieController.post(
 	'/import/',
 	fileUpload({ createParentPath: true, useTempFiles: true }),
 	errorCatcher(async (req, res) => {
-		const result = await movieService.importMany(req.files.movies);
+		const result = await movieService.importMany(req.files);
 		res.status(200).send(result);
 	})
 );

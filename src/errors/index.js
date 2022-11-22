@@ -1,11 +1,11 @@
-class InvalidPasswordError extends Error {}
+class WrongCredentials extends Error {}
 
-class DifferentPasswordError extends Error {}
+class ValidationError extends Error {}
 
 class NotFoundError extends Error {}
 
 module.exports = {
-	InvalidPasswordError,
-	DifferentPasswordError,
+	WrongCredentials,
+	ValidationError,
 	NotFoundError,
 };
