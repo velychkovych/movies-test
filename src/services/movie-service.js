@@ -1,27 +1,6 @@
 const { NotFoundError } = require('../errors');
 
-module.exports = ({ movieDao, actorDao, movieValidator, fileReader }) => {
-	const parseMovies = (records) => {
-		const parsedMovies = [];
-		for (let i = 0; i < records.length; i += 5) {
-			if (!records[i]) break;
-			const title = records[i].replace('Title: ', '');
-			const year = parseInt(
-				records[i + 1].replace('Release Year: ', ''),
-				10
-			);
-			const format = records[i + 2].replace('Format: ', '');
-			const actors = records[i + 3].replace('Stars: ', '').split(', ');
-			parsedMovies.push({
-				title,
-				year,
-				format,
-				actors,
-			});
-		}
-		return parsedMovies;
-	};
-
+module.exports = ({ movieDao, actorDao, movieValidator, fileService }) => {
 	async function getAll({
 		actor,
 		title,
@@ -82,10 +61,9 @@ module.exports = ({ movieDao, actorDao, movieValidator, fileReader }) => {
 
 	async function importMany(files) {
 		const file = await movieValidator.validateImportFile(files);
-		const data = await fileReader.readFile(file.tempFilePath);
-		const parsedMovies = parseMovies(data.toString().split('\n'));
+		const parsedMovies = await fileService.parseTxtFile(file);
 		const actorNames = [
-			...new Set(parsedMovies.flatMap((movie) => movie.actors)),
+			...new Set(parsedMovies.flatMap((movie) => movie.actorNames)),
 		];
 		const actors = await actorDao.findManyByName(actorNames);
 		const notCreatedActors = actorNames.filter(
@@ -100,7 +78,7 @@ module.exports = ({ movieDao, actorDao, movieValidator, fileReader }) => {
 					year: movie.year,
 					format: movie.format,
 				},
-				actorIds: movie.actors.map(
+				actorIds: movie.actorNames.map(
 					(name) => allActors.find((actor) => actor.name === name).id
 				),
 			}))

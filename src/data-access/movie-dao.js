@@ -10,9 +10,14 @@ module.exports = (sequelize, Movie, Actor) => {
 		return movie;
 	};
 
+	const transformSort = (sort) => {
+		if (sort === 'id') return sort;
+		return sequelize.fn('lower', sequelize.col(sort));
+	};
+
 	async function findManyByActor(actor, { sort, order, limit, offset }) {
 		const findMovies = await Movie.findAll({
-			order: [[sort, order]],
+			order: [[transformSort(sort), order]],
 			limit,
 			offset,
 			include: {
@@ -36,7 +41,7 @@ module.exports = (sequelize, Movie, Actor) => {
 					`%${title}%`
 				),
 			},
-			order: [[sort, order]],
+			order: [[transformSort(sort), order]],
 			limit,
 			offset,
 			include: Actor,
@@ -52,7 +57,7 @@ module.exports = (sequelize, Movie, Actor) => {
 
 	async function findAll({ sort, order, limit, offset }) {
 		const findMovies = await Movie.findAll({
-			order: [[sort, order]],
+			order: [[transformSort(sort), order]],
 			limit,
 			offset,
 			include: Actor,

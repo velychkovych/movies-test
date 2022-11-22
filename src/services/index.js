@@ -6,10 +6,12 @@ const fileReader = require('../utils/filereader');
 const userValidator = require('./validators/user-validator');
 const movieValidator = require('./validators/movie-validator');
 
+const buildFileService = require('./file-service');
 const buildAuthService = require('./auth-service');
 const buildUserService = require('./user-service');
 const buildMovieService = require('./movie-service');
 
+const fileService = buildFileService({ fileReader, movieValidator });
 const authService = buildAuthService({ userDao, bcryptProvider, jwtProvider });
 const userService = buildUserService({
 	userDao,
@@ -21,7 +23,7 @@ const movieService = buildMovieService({
 	movieDao,
 	actorDao,
 	movieValidator,
-	fileReader,
+	fileService,
 });
 
 module.exports = Object.freeze({ authService, userService, movieService });

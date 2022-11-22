@@ -39,14 +39,15 @@ module.exports = Object.freeze({
 			)
 		)
 			throw new ValidationError(
-				'year should be a number and between 1900 and 2022'
+				`year should be a number and between 1900 and 2022`
 			);
 
 		validated.format = format;
-		if (!['VHS', 'DVD', 'Blu-ray'].includes(format))
+		if (!['VHS', 'DVD', 'Blu-Ray'].includes(format)) {
 			throw new ValidationError(
-				'format should be one of the following values: VHS, DVD, Blu-ray'
+				`format should be one of the following values: VHS, DVD, Blu-Ray`
 			);
+		}
 
 		const formatedActors = actorNames.map((name) =>
 			name
